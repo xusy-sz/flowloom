@@ -1,0 +1,23 @@
+{
+  // 类型检查覆盖：src/**（库面：kernel 纯 TS + svelte 渲染层）与 fixtures/**/*.svelte
+  // （测试夹具）真覆盖；playground/**/*.js 不在此面内——本仓 tsc 未开 allowJs/checkJs
+  // （demo 是运行时编译的纯 JS，开 checkJs 会以 implicit-any 噪声淹没信号），这些文件
+  // 由 ESLint（解析 + 全部规则）与 playground 构建冒烟承接。「不覆盖」在此显式申报。
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.svelte", "fixtures/**/*.svelte", "vite.config.ts"]
+}

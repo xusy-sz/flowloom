@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 集成 demo（票 37 · wayfinder epic 收口载体）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        max-width: calc(100% - 330px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar button[aria-pressed='true'] {
+        background: var(--fl-selection, #2563eb);
+        color: #fff;
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 120px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+
+      /* ============ 宿主 CSS（角色演示——六面同场的视觉全权在宿主） ============
+       * 状态视觉（票 33 姿势）：离散态吃 data-fl-state-status 属性、连续量吃
+       * --fl-state-progress 变量；结构位（徽章/进度条）库供 DOM，此处只写色/动效。
+       * #app id 前缀=提特异度赢库 scoped 平局（票 28 demo 实证）。 */
+      #app .fl-node[data-fl-state-status='done'] {
+        border-color: #16a34a;
+        background: color-mix(in srgb, #16a34a 7%, var(--fl-node-bg, #fff));
+      }
+      #app .fl-node[data-fl-state-status='active'] {
+        border-color: var(--fl-selection, #2563eb);
+        animation: fl-int-pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes fl-int-pulse {
+        50% {
+          box-shadow: 0 0 0 4px color-mix(in srgb, var(--fl-selection, #2563eb) 18%, transparent);
+        }
+      }
+      #app .fl-node[data-fl-state-status='fog'] {
+        opacity: 0.55;
+        filter: grayscale(0.65);
+      }
+      /* 未开始（todo）=不写整节点规则——零缺省解释，徽章空心圈足矣 */
+      #app .fl-node[data-fl-state-status='done'] .fl-node-badge {
+        background: #16a34a;
+      }
+      #app .fl-node[data-fl-state-status='active'] .fl-node-badge {
+        background: var(--fl-selection, #2563eb);
+        animation: fl-int-blink 1.2s ease-in-out infinite;
+      }
+      @keyframes fl-int-blink {
+        50% {
+          opacity: 0.35;
+        }
+      }
+      #app .fl-node[data-fl-state-status='todo'] .fl-node-badge {
+        background: transparent;
+        border: 1.5px solid var(--fl-fg-muted, #94a3b8);
+      }
+      #app .fl-node[data-fl-state-status='fog'] .fl-node-badge {
+        background: var(--fl-fg-muted, #94a3b8);
+      }
+      #app .fl-node-progress {
+        background: color-mix(in srgb, var(--fl-fg-muted, #94a3b8) 20%, transparent);
+      }
+      #app .fl-node-progress-fill {
+        background: var(--fl-selection, #2563eb);
+        transition: width 120ms linear;
+      }
+
+      /* 锁视觉（票 36 姿势）：锁单=谓词从 data.state 推导（done·active→锁）——锁角标
+       * 🔒 直接吃同源 data-fl-state-status 属性，随真源同步自动换锁面（零第二张名单）。 */
+      #app .fl-node[data-fl-state-status='done']::after,
+      #app .fl-node[data-fl-state-status='active']::after {
+        content: '🔒';
+        position: absolute;
+        top: 4px;
+        right: 22px;
+        font-size: 10px;
+        line-height: 1;
+      }
+
+      /* 假票窗（票 32 载体页同款——宿主侧浮层，非库面） */
+      .fl-demo-window {
+        position: absolute;
+        z-index: 7;
+        width: 260px;
+        padding: 10px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 8px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 6px 20px rgb(15 23 42 / 14%);
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-window h4 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-window p {
+        margin: 4px 0;
+      }
+      .fl-demo-window-hint {
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-window button {
+        margin: 6px 6px 0 0;
+        padding: 2px 10px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-window .fl-window-fake {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 14%, transparent);
+      }
+
+      /* toast（假动作反馈面） */
+      .fl-demo-toast {
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 8;
+        max-width: 70%;
+        padding: 6px 14px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 999px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 4px 14px rgb(15 23 42 / 12%);
+        font:
+          12px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-pause" type="button" aria-pressed="false">暂停真源</button>
+        <button id="fl-mirror" type="button">整图重镜</button>
+        <button id="fl-reset" type="button">复位真源</button>
+        <button id="fl-fit" type="button">适配全图</button>
+        <button id="fl-theme" type="button">主题：自动</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>集成 demo（票 37 · epic 收口载体）</h3>
+        <p>
+          六面同场一张画布（互相正交的整图联动实证）：右键菜单（31·items 宿主注入）/双击
+          假票窗（32·改道钩子）/状态双通道（33·<code>nodeStates</code> props——离散
+          <code>status</code> 四态+连续 <code>progress</code> 底缘条）/假真源定时外摄（34·<code
+            >applyExternal</code
+          >
+          变更单+<code>applyExternalGraph</code> 整图重镜）/
+          有向箭头（35·默认面）/谓词结构锁（36·done·active→🔒）。
+        </p>
+        <p>
+          假真源每 130ms 一拍：进行中票进度推进（纯 props 通道零 kernel）；走满即一轮——
+          完结（锁面自动扩）·下一票接棒·归档最老完结票（<strong>锁定也照删=外部门不刷卡</strong>）·
+          新票 near 尾票落位；每 4 轮整图重镜（<strong>册上没有=删除</strong>——手工节点被清场）。
+        </p>
+        <p>
+          <strong>试手</strong>：右键 <code>t37</code>（🔒）→ 删除——<strong>被拦</strong>（toast
+          报拦截理由）；拖 <code>t37</code> 节点体——<strong>挪位放行</strong>；右键
+          <code>t38</code> → 删除——也拦（可编辑但<strong>拴在冻结边</strong> e5
+          上，删它=改边）；右键 <code>fog1</code>（无冻结边）→
+          删除——<strong>照删</strong>，等整图重镜它会
+          <strong>复活</strong>（镜子语义）；双击任意票——宿主假票窗（改名不发生）；双击空白——
+          搜索落手工节点，重镜后看清场；拖 fog1↔新票 端口——新边照常（箭头指被阻塞方）。
+          <strong>改连被拦</strong>：锁定节点端口起不来线、冻结边拖可编辑端改连也不起（整条冻）。
+        </p>
+        <p>
+          读数面：真源节拍/手工（不在册）节点/锁定集/undo 栈（外部同步恒零快照——只有
+          用户操作入栈）/最近同步（两门各态）。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./integration-demo.js"></script>
+  </body>
+</html>

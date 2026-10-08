@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 边形状四型（票 52 载体页）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        max-width: calc(100% - 330px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar button[aria-pressed='true'] {
+        background: var(--fl-selection, #2563eb);
+        color: #fff;
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 84px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-mode-bezier" type="button" aria-pressed="true">全局：bezier</button>
+        <button id="fl-mode-straight" type="button" aria-pressed="false">全局：straight</button>
+        <button id="fl-mode-step" type="button" aria-pressed="false">全局：step</button>
+        <button id="fl-mode-smoothstep" type="button" aria-pressed="false">全局：smoothstep</button>
+        <button id="fl-reset" type="button">复位图</button>
+        <button id="fl-theme" type="button">主题：自动</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>边形状四型（票 52）</h3>
+        <p>
+          连线几何路由四型（对标 SF 同名）：<strong>bezier</strong>（缺省——水平切线贝塞尔）/
+          <strong>straight</strong>（直线——兜自由连线）/<strong>step</strong>（正交折线——
+          横平竖直版式）/<strong>smoothstep</strong>（圆角折线）。纯渲染层配置——不进
+          图数据/序列化，换档零快照即时生效。
+        </p>
+        <p>
+          声明面双供：<strong>全局缺省</strong>=演示条四档钮（CanvasView props
+          <code>edgeShape</code>）；<strong>词表 per-type 覆盖</strong>=四行示例各自声明
+          （<code>NodeTypeDef.edgeShape</code>，<strong>from 侧节点型生效</strong>——「随全局」
+          行不声明跟全局走）。解析优先级=词表 &gt; 全局 &gt; bezier。
+        </p>
+        <p>
+          试手：切全局档——只有「随全局」行变形状（词表行恒稳）；拖 <strong>e5</strong>（最下
+          折线边）身上中继点——<strong>固定必经拐点</strong>拖到哪拐点就在哪（相邻顶点间
+          各自走形状段）；点 e2 边路径任意处=原位插中继点（命中跟形状——点折线插折线）。
+        </p>
+        <p>
+          箭头朝向=末段切向四型通吃（straight 行箭头跟对角线方向）；straight 后退边可能
+          穿越节点=<strong>型内固有非缺陷</strong>（SF 同款）；minimap 直线段简化投影不跟形状。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./edge-shapes-demo.js"></script>
+  </body>
+</html>

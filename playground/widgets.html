@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 节点内 widget 演示</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/侧栏（票 24 token 化：原硬编码浅色值深色下不可读——色走库
+       * token 随主题翻，theme.html 同款姿势；回退值即原浅色值） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-bar .fl-current {
+        color: var(--fl-selection, #2563eb);
+        font-weight: 600;
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 52px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 250px;
+        padding: 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar" id="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-w-fixed" type="button">A 固定最小宽 240</button>
+        <button id="fl-w-content" type="button">B 随内容放大</button>
+        <span class="fl-current" id="fl-w-label">当前：A 固定最小宽 240</span>
+        <button id="fl-undo" type="button">撤销</button>
+        <button id="fl-redo" type="button">重做</button>
+        <button id="fl-layout" type="button">一键重排 (L)</button>
+        <button id="fl-fit" type="button">适配全图</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>属性面板（双入口对照——同数据两视图）</h3>
+        <div id="fl-demo-props"></div>
+      </div>
+    </div>
+    <script type="module" src="./widgets-demo.js"></script>
+  </body>
+</html>

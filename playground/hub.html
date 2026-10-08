@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 演示枢纽</title>
+    <style>
+      /* 枢纽页壳层样式（票 24，载体非库面）：色走库 token=随主题翻（票 22 demo 姿势） */
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        font:
+          14px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        background: var(--fl-canvas-bg, #f6f7f9);
+      }
+      .hub-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 24px 20px 48px;
+      }
+      .hub-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .hub-head h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      .hub-head button {
+        padding: 4px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        font: inherit;
+        color: inherit;
+        background: var(--fl-panel-bg, #ffffff);
+        cursor: pointer;
+      }
+      .hub-head button:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .hub-head p {
+        width: 100%;
+        margin: 4px 0 0;
+        color: var(--fl-fg-muted, #64748b);
+        font-size: 13px;
+      }
+      section {
+        margin-top: 22px;
+        padding: 14px 18px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: var(--fl-panel-radius, 6px);
+        background: var(--fl-panel-bg, #ffffff);
+      }
+      section h2 {
+        margin: 0 0 4px;
+        font-size: 16px;
+      }
+      section h2 a {
+        color: var(--fl-selection, #2563eb);
+        text-decoration: none;
+      }
+      section h2 a:hover {
+        text-decoration: underline;
+      }
+      section h2 code {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .hub-note {
+        margin: 0 0 10px;
+        color: var(--fl-fg-muted, #64748b);
+        font-size: 13px;
+      }
+      .hub-deep {
+        margin: 0 0 10px;
+        font-size: 13px;
+      }
+      .hub-deep a {
+        color: var(--fl-selection, #2563eb);
+      }
+      section ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 6px 20px;
+      }
+      section li {
+        position: relative;
+        padding-left: 14px;
+        font-size: 13px;
+      }
+      section li::before {
+        content: '·';
+        position: absolute;
+        left: 2px;
+        color: var(--fl-fg-muted, #94a3b8);
+      }
+      section li i {
+        font-style: normal;
+        color: var(--fl-fg-muted, #94a3b8);
+      }
+      .hub-foot {
+        margin-top: 26px;
+        color: var(--fl-fg-muted, #64748b);
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hub-wrap">
+      <div class="hub-head">
+        <h1>flowloom 演示枢纽</h1>
+        <button id="fl-theme" type="button">主题：自动</button>
+        <p>
+          节点编辑器能力散在各演示页——本页一页看全+直达；各页演示条首项「⌂ 枢纽」返链回此。
+          主题选择经 localStorage 单源联动（本页或主演练页切换，全部页面随动）。
+        </p>
+      </div>
+
+      <section>
+        <h2><a href="./index.html">主演练页</a> <code>index.html</code></h2>
+        <p class="hub-note">
+          单场景贯通：M1 必备面八项（右侧演练清单逐项点亮）+M2
+          长尾全档——工具条/节点库/属性面板/小地图全装配。
+        </p>
+        <ul>
+          <li>视口与命中基座：滚轮缩放/空格·中键平移/适配全图 F <i>（票 01）</i></li>
+          <li>节点落位两路：双击空白搜索面板/侧栏节点库拖入 <i>（票 02）</i></li>
+          <li>拖拽连线：端口拖线/拖已连端改连/拖线到空白落新节点 <i>（票 03）</i></li>
+          <li>选区与节点拖动：框选/Ctrl 点选增减/整体拖动/Delete <i>（票 04）</i></li>
+          <li>复制粘贴：Ctrl+C/V 逐次偏移/跨标签/可撤销 <i>（票 05）</i></li>
+          <li>视口持久化：localStorage 存档重开复原三件 <i>（票 06）</i></li>
+          <li>属性面板：词表 widget 描述驱动+自定义组件注册位 <i>（票 07）</i></li>
+          <li>撤销重做：快照式全编辑面+栈空灰钮查询面 <i>（票 08、25）</i></li>
+          <li>分组：Ctrl+G 成组/解组/点组框选/组框适配 <i>（票 09）</i></li>
+          <li>子图：Ctrl+Shift+E 转换/双击进入/面包屑回溯/镜头 LRU <i>（票 10）</i></li>
+          <li>reroute 中继点：点连线加点/拖点整理/点中继点删点 <i>（票 11）</i></li>
+          <li>minimap 缩略导航：点击跳转/拖动跟随（可开关） <i>（票 12）</i></li>
+          <li>对齐分布与自动排布：六轴/两轴/整图·选区，默认 L→R（L） <i>（票 13、23）</i></li>
+          <li>命令注册制快捷键：键位查询/换绑/存档演示行 <i>（票 14）</i></li>
+          <li>选区浮动工具条+双击节点改名+悬停 tooltip <i>（票 15）</i></li>
+          <li>多开标签装配：多实例隔离 <i>（票 16——装配指引在 README，无专页）</i></li>
+          <li>渲染质量三连：转换悬边/盒几何对齐/连线可见性 <i>（票 17-19，连线即面）</i></li>
+          <li>节点折叠两态：标题条 chevron 折叠/复原 <i>（票 26，step 节点即面）</i></li>
+          <li>深浅主题切换钮（本枢纽同款单源） <i>（票 22）</i></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./nested.html">嵌套演示</a> <code>nested.html</code></h2>
+        <p class="hub-note">
+          预构建多容器工作流：预处理[内嵌「文本规范化」[分词/清洗/停用词]]→提示组装→LLM→安全审查；
+          组×2+长边中继点+自定义标题+minimap+一键重排。
+        </p>
+        <p class="hub-deep">
+          三镜头深链：<a href="./nested.html?scene=root">根视图</a> /
+          <a href="./nested.html?scene=a">进「预处理」</a> /
+          <a href="./nested.html?scene=b">再进嵌套「文本规范化」</a>
+        </p>
+        <ul>
+          <li>子图嵌套两层的容器结构 <i>（票 10、16 后展示页）</i></li>
+          <li>分组与子图混排 <i>（票 09）</i></li>
+          <li>长边中继点+一键重排（排布后清空重置演示） <i>（票 11、23）</i></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./layout.html">数据驱动布局</a> <code>layout.html</code></h2>
+        <p class="hub-note">
+          声明 nodes/edges（无坐标）→ fromUiFormat+autoLayout 一键出图——数据先行的装配路演练。
+        </p>
+        <ul>
+          <li>两样本：AI 工作流 14 节点/网格压力 20 节点（回边环破环面） <i>（票 20）</i></li>
+          <li>方向切换：L→R 默认/TB 显式（票 23 新布局面）</li>
+          <li>可读性读数面：层数/层内最大/层间净距/交叉数 <i>（票 20、23）</i></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./widgets.html">节点内 widget</a> <code>widgets.html</code></h2>
+        <p class="hub-note">
+          控件长在节点身上（ComfyUI 形）——标题条+widget 行列三段形，双入口同数据。
+        </p>
+        <ul>
+          <li>五内建型 text/number/boolean/enum/textarea+只读 JSON 回退 <i>（票 21）</i></li>
+          <li>宽度策略 A/B 原型：固定最小宽 240/随内容放大 <i>（票 21）</i></li>
+          <li>折叠两态：标题条 chevron 折叠/复原 <i>（票 26）</i></li>
+          <li>双入口对照：节点体+属性面板同数据两视图 <i>（票 07、21）</i></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./theme.html">深色主题与节点 chrome</a> <code>theme.html</code></h2>
+        <p class="hub-note">
+          集中 token 表两段覆写+词表类型色——浅/深/自动三态与标题带染色三档原型。
+        </p>
+        <ul>
+          <li>浅/深/自动切换：&lt;html data-fl-theme&gt; <i>（票 22）</i></li>
+          <li>标题带染色三档：A 染色带 40%（库默认）/B 实色带/C 浅染+左色条</li>
+          <li>端口类型色开放集 --fl-port-{typeId} <i>（票 22）</i></li>
+          <li>暗色中继点+一键重排 <i>（票 22、23）</i></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./contextmenu.html">右键菜单</a> <code>contextmenu.html</code></h2>
+        <p class="hub-note">
+          契约 v2 contextmenu 事件+命中五路分区+ContextMenu 卫星件——items 全宿主注入（本页 demo
+          即宿主样例），右键改选=Windows 规则。
+        </p>
+        <ul>
+          <li>命中五路：节点/端口/边/中继点/组框/空白各出宿主菜单 <i>（票 31）</i></li>
+          <li>右键改选 Windows 规则+菜单期工具条让位 <i>（票 27 追加裁定、票 31）</i></li>
+          <li>让位两吞（拖动在途/空格平移）+外点·Esc·右键点菜单自身关闭</li>
+          <li>节点内控件右键=原生菜单（隔离让位）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./dblclick.html">节点双击改道</a> <code>dblclick.html</code></h2>
+        <p class="hub-note">
+          双击节点可改道宿主回调 controller.onNodeDoubleClick（onLinkEmptyDrop 同款可置
+          钩子）——三态切换对照：接管开宿主对话窗/拒接回落改名/缺省照旧。
+        </p>
+        <ul>
+          <li>接管判据=仅显式拒接（返回 false 回落；void/true 吃双击不吃改名） <i>（票 32）</i></li>
+          <li>参数=命中节点+画布本地 screen 坐标（宿主锚浮层用）</li>
+          <li>
+            改道只及节点体：空白照弹搜索面板、子图占位照进、平移态照让 <i>（票 15 收口不迁）</i>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./status.html">节点状态呈现</a> <code>status.html</code></h2>
+        <p class="hub-note">
+          nodeStates props 双轨透传（data 袋→data-fl-state-* 属性/vars 袋→--fl-state-*
+          变量）+库结构位（徽章/进度条）——三版对照：纯 CSS/库结构位/wayfinder 活图。
+        </p>
+        <ul>
+          <li>两子袋开放集键+形状守卫；只落节点根（宿主 CSS 后代选择器命位） <i>（票 33）</i></li>
+          <li>结构位：徽章恒渲染纯结构钩；进度条 vars.progress 键在场才渲染、几何不变</li>
+          <li>活图零污染：状态翻转/进度推进零 kernel 缝零 undo 栈（读数面实证）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./arrows.html">边箭头</a> <code>arrows.html</code></h2>
+        <p class="hub-note">
+          有向边 to 端实心三角（原型裁定：三角×屏幕恒定×11px）——「谁阻塞谁」可读；
+          长短边/后退边/中继点边五态+缩放档+选中跟随。
+        </p>
+        <ul>
+          <li>屏幕恒定：箭头与 3px 不缩线宽同族（0.4×~1.6× 恒 11px） <i>（票 35）</i></li>
+          <li>后退边朝左入入口/退化朝右缺省；层序=边之上端口点之下</li>
+          <li>色随边族：类型色 inline 同链+选中邻接变选区色+浅深主题自适应</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./locks.html">结构面锁</a> <code>locks.html</code></h2>
+        <p class="hub-note">
+          宿主旁边声明「节点存在性+其边连接不可变」——锁语义半边拦（删/连/拆线）、
+          布局半边放行（挪位/分组/折叠）；谓词+编号集两形同供取并，锁单三档切换对照。
+        </p>
+        <ul>
+          <li>边整条冻结（含改可编辑端）；Delete 过滤删除、被拦路径零快照 <i>（票 36）</i></li>
+          <li>外部门不刷卡（applyExternal 真源进出照常）；锁单不被整包替换冲掉</li>
+          <li>锁定视觉=本页自有 CSS 按 data-fl-node 染（库面零预置——票 33 姿势延续）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./connection-rules.html">连接校验</a> <code>connection-rules.html</code></h2>
+        <p class="hub-note">
+          宿主旁边声明「哪些连接合法」：词表兼容矩阵（typeId→可连名单）+谓词（跨字段动态逻辑
+          ——premium 源限定例）两形同供 AND 合流；校验单四档切换对照。
+        </p>
+        <ul>
+          <li>
+            拖线红档（data-fl-link-valid）随档翻转；落点校验不过=静默终止零快照 <i>（票 51）</i>
+          </li>
+          <li>
+            三路刷卡（拖线/改连/拖线搜索自动连跳违例端口）·四门不刷（外部门/直连/撤销回放/粘贴）对照钮
+          </li>
+          <li>锁面红档统一：锁定落点预览显红（1.25.0 行为变化——票 36 已知观感收口）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./edge-shapes.html">边形状四型</a> <code>edge-shapes.html</code></h2>
+        <p class="hub-note">
+          连线几何路由四型（bezier/straight/step/smoothstep——对标 SF 同名）：全局缺省四档 切换+词表
+          per-type 覆盖（from 侧挂源）同图对照；纯渲染层配置零序列化污染。
+        </p>
+        <ul>
+          <li>reroute 中继点=固定必经拐点（拖到哪拐点就在哪——折线形所见即所得）<i>（票 52）</i></li>
+          <li>三连带：箭头朝向末段切向四型通吃/边路径命中跟形状/拖线预览跟声明形状</li>
+          <li>straight 后退边可能穿越节点=型内固有非缺陷（SF 同款）记档</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./edge-jump.html">跨线桥 JumpOver</a> <code>edge-jump.html</code></h2>
+        <p class="hub-note">
+          边-边交叉处半圆弧「跳过」（工程制图惯例，GoJS 内置同款）：X 交叉两边+三线网格多交叉
+          活例，开关对照+四型循环；CanvasView props <code>edgeJump</code>（缺省关零行为变化）。
+        </p>
+        <ul>
+          <li>
+            跳边=边 id 字典序大者（稳定裁定——拖动时弧随交叉出现/消失不换侧不闪）<i>（票 53）</i>
+          </li>
+          <li>两两包围盒预筛+精确线段测试（曲线族拉平近似）；同端口扇出近锚交叉不画弧</li>
+          <li>弧半径屏幕恒定 7px 随镜头补偿；命中沿基础路径、弧吃既有 stroke/高亮 CSS</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./export.html">PNG·SVG 导出</a> <code>export.html</code></h2>
+        <p class="hub-note">
+          全图导出为自包含 SVG 串/PNG Blob（<code>controller.exportSVG()/exportPNG()</code>
+          ——toUiFormat 同款数据出口门面，交付返回产物不触发下载）：浅深两档 PNG 预览+下载钮 （宿主
+          a[download] 接线演示）+透明背景对照+pixelRatio 对照+SVG 源文本读数。
+        </p>
+        <ul>
+          <li>
+            主题缺省=exportEnv 旁挂槽（CanvasView 挂载镜像 tokens.css 级联发布）<i>（票 56）</i>
+          </li>
+          <li>
+            所见即所导：类别色/状态四态（todo 雾化·running/done
+            档色·进度条）/锁角标/折叠形跟随，交互态不带
+          </li>
+          <li>
+            自包含口径：色值字面量化（token 表同步钉死）+字体声明随行；exportSVG headless 全可用
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./selection.html">宿主响应式接线</a> <code>selection.html</code></h2>
+        <p class="hub-note">
+          选区只读 store（createSelectionStore——svelte/store readable 普通落 .ts）+ getSelectedNodes
+          便捷 getter：宿主侧栏跟随「当前选中」零 tick 咒语。
+        </p>
+        <ul>
+          <li>
+            订阅源=controller.subscribe 零第二真源；无关通知（视口/未涉选区）零发射 <i>（票 44）</i>
+          </li>
+          <li>值=选中节点对象（图序）；data 回写（面板/侧栏同源 controller）也发射、可撤销</li>
+          <li>只读纪律=面仅 subscribe；侧栏=Svelte $store 直用样例（本页挂真组件）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./custom-widget.html">自定义 widget</a> <code>custom-widget.html</code></h2>
+        <p class="hub-note">
+          嵌套对象型 data 挂自定义 widget——词表声明 kind='vec2'、注册位 widgetComponents
+          指名接管（内建五型表达不了的结构走这里，别在面板旁自写表单）。
+        </p>
+        <ul>
+          <li>
+            props 契约 { value, def, onCommit }：组件只产值、整对象回写恰一张快照可撤销
+            <i>（票 07、46）</i>
+          </li>
+          <li>双入口同一注册位：PropertiesPanel 与 CanvasView 同形 props <i>（票 21、46）</i></li>
+          <li>值宽松读不炸（data 无此键/缺键读兜底）；README 样例与本页组件逐字同源</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./a11y.html">无障碍声明面</a> <code>a11y.html</code></h2>
+        <p class="hub-note">
+          键盘导航+aria 最小声明集——键盘能到达+能操作核心动作+读屏能识别；读数面对
+          键盘每步有数可对（Tab 遍历选区跟随/nudge 像素位移/Enter 改名/± 缩放/空格平移）。
+        </p>
+        <ul>
+          <li>
+            Tab/Shift+Tab 图序遍历（选区即焦点）、方向键 1px·Shift 10px、Enter=双击等效
+            <i>（票 50）</i>
+          </li>
+          <li>输入域 Tab 不被吞（控件域键不进命令接线——表单兼容前提）；空格+方向=镜头平移</li>
+          <li>
+            role="application"+activedescendant 跟随+节点 label 单源；labels props
+            英文覆写例（本页活例）
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2><a href="./dist.html">dist 预构建入口</a> <code>dist.html</code></h2>
+        <p class="hub-note">
+          整页改吃 dist 产物——import 全走 flowloom/dist 四键；三入口 bundle ESM+tokens.css
+          四件套，svelte 恒 external、组件 css 内嵌（免编译腿——宿主构建零 Svelte 知识）。
+        </p>
+        <ul>
+          <li>读数面首行=浏览器资源表实际加载的 dist 模块（真吃 dist 取证面）</li>
+          <li>交互面与源码页零差：拖节点快照可撤销/端口拖线/框选/滚轮缩放 <i>（票 54）</i></li>
+          <li>
+            消费姿势=优先 dist 源码兜底（README「dist 入口与源码消费」节）；重建 npm run dist:build
+            随版本 bump
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>
+          <a href="./integration.html">集成 demo（epic 收口）</a> <code>integration.html</code>
+        </h2>
+        <p class="hub-note">
+          wayfinder 六面同场一张画布——右键菜单/双击票窗/状态双通道/假真源定时外摄（两门）/
+          有向箭头/谓词结构锁：互相正交主张的整图联动实证。
+        </p>
+        <ul>
+          <li>
+            离散 todo/active/done/fog+progress 连续键底缘条 <i>（票 33；票 30 裁 3 达标线）</i>
+          </li>
+          <li>假真源定时外摄：变更单轮换（完结·接棒·归档·near 新票）+整图重镜 <i>（票 34）</i></li>
+          <li>锁互动活例：锁定节点用户删不掉、真源归档照常进（外部门不刷卡） <i>（票 36）</i></li>
+          <li>右键菜单假执行（toast 反馈）+双击假票窗（改道钩子） <i>（票 31、32）</i></li>
+          <li>有向箭头链上「谁阻塞谁」可读（默认面） <i>（票 35）</i></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>
+          <a href="./integration2.html">集成 demo II（本册收口）</a>
+          <code>integration2.html</code>
+        </h2>
+        <p class="hub-note">
+          本册（下一阶段方向）六面同场一张画布——审批流场面：连接校验（矩阵∧谓词红档）/
+          边形状四型+跨线桥/PNG·SVG 导出/a11y 键盘面/侧栏跟随/整页 dist 消费。
+        </p>
+        <ul>
+          <li>校验拦截：跨类连矩阵拦+终审只接 level≥3 谓词拦，锁面红档统一 <i>（票 39/51）</i></li>
+          <li>
+            词表 per-type 边形状（初审 step/终审 smoothstep/修订 bezier）+全局缺省循环+交叉 半圆弧
+            <i>（票 40/52/53）</i>
+          </li>
+          <li>
+            导出所见即所导（状态染色/进度条/锁角标跟随）；下载=宿主一行接线 <i>（票 48/56）</i>
+          </li>
+          <li>a11y 键盘全链（Tab/nudge/Enter/±/空格平移）读数面逐步有数 <i>（票 47/50）</i></li>
+          <li>
+            侧栏 $selection 跟随+回写可撤销 <i>（票 44）</i>；整页 import 走 flowloom/dist
+            键族（dist 入口第一个非验证性消费者）<i>（票 42/54）</i>
+          </li>
+        </ul>
+      </section>
+
+      <p class="hub-foot">
+        载体导览页（票 24）——库面零改动；能力契约与接线见 README / docs/spec。
+        <code>npm run play</code> 后各页均在 5199 端口。
+      </p>
+    </div>
+    <script type="module" src="./hub.js"></script>
+  </body>
+</html>

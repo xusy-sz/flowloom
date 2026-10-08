@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 深色主题与节点 chrome 演示</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* demo 条与面板走 --fl-panel-* token——暗色下随表翻（卫星件同验面） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: var(--fl-panel-space-xs, 4px) var(--fl-panel-space-sm, 5px);
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: var(--fl-panel-radius, 6px);
+        background: var(--fl-panel-bg, #ffffff);
+        box-shadow: var(--fl-panel-shadow, 0 4px 12px rgb(15 23 42 / 12%));
+        font:
+          var(--fl-panel-font-size, 13px)/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        color: inherit;
+        background: transparent;
+      }
+      .fl-demo-bar button:hover {
+        border-color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-bar .fl-current {
+        color: var(--fl-selection, #2563eb);
+        font-weight: 600;
+      }
+      .fl-demo-note {
+        position: absolute;
+        top: 52px;
+        left: 8px;
+        z-index: 6;
+        padding: var(--fl-panel-space-xs, 4px) 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: var(--fl-panel-radius, 6px);
+        background: var(--fl-panel-bg, #ffffff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg-muted, #64748b);
+        white-space: pre;
+      }
+      /* —— chrome 形态原型三档（票 22 票内 HITL 裁定面——demo 侧 CSS 覆写，库默认
+       * 恒为「染色带 40%」档；特异性 (0,3,0) 压过组件 scoped 规则）—— */
+      /* A 染色带（库默认档）：类别色 40% 混透明叠节点底——浅深自适应、任意宿主色可读 */
+      /* B 实色带（ComfyUI legacy 形）：标题带=类别色实填 */
+      #fl-app[data-fl-variant='solid'] .fl-node .fl-node-header {
+        background: var(--fl-node-cat, transparent);
+      }
+      /* C 浅染+左色条：12% 淡染整带+左缘 3px 实色条 */
+      #fl-app[data-fl-variant='strip'] .fl-node .fl-node-header {
+        background: color-mix(in srgb, var(--fl-node-cat, transparent) 12%, transparent);
+        border-left: 3px solid var(--fl-node-cat, transparent);
+      }
+      /* 端口类型色开放集（宿主供值面——词表 PortDef.typeId 指名消费） */
+      :root {
+        --fl-port-model: #b39ddb;
+        --fl-link-model: #b39ddb;
+        --fl-port-text: #ffd500;
+        --fl-link-text: #ffd500;
+        --fl-port-latent: #ff9cf9;
+        --fl-link-latent: #ff9cf9;
+        --fl-port-image: #64b5f6;
+        --fl-link-image: #64b5f6;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="fl-app" data-fl-variant="tint" style="position: absolute; inset: 0">
+        <div class="fl-demo-bar">
+          <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+          <button id="fl-theme" type="button">主题：自动</button>
+          <button id="fl-v-tint" type="button">A 染色带（库默认）</button>
+          <button id="fl-v-solid" type="button">B 实色带</button>
+          <button id="fl-v-strip" type="button">C 浅染+左色条</button>
+          <span class="fl-current" id="fl-v-label">chrome：A 染色带 40%</span>
+          <button id="fl-layout" type="button">一键重排 (L)</button>
+          <button id="fl-fit" type="button">适配全图</button>
+        </div>
+        <div class="fl-demo-note">
+          深浅切换=&lt;html data-fl-theme&gt;；缺省跟随系统 节点体控件（勾选/下拉）随主题走=UA
+          color-scheme 限画布子树
+        </div>
+      </div>
+    </div>
+    <script type="module" src="./theme-demo.js"></script>
+  </body>
+</html>

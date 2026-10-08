@@ -1,0 +1,60 @@
+{
+  "name": "flowloom",
+  "version": "1.32.1",
+  "private": true,
+  "type": "module",
+  "description": "Full-featured node-editor canvas library: framework-agnostic kernel + Svelte 5 rendering layer",
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json",
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "check:rules": "node tools/check/code_limits.mjs",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run check:rules",
+    "play": "vite --config playground/vite.config.mjs",
+    "play:build": "vite build --config playground/vite.config.mjs",
+    "dist:build": "node tools/dist-build.mjs"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./kernel": "./src/kernel/index.ts",
+    "./svelte": "./src/svelte/index.ts",
+    "./tokens.css": "./src/svelte/tokens.css",
+    "./dist": "./dist/index.js",
+    "./dist/kernel": "./dist/kernel.js",
+    "./dist/svelte": "./dist/svelte.js",
+    "./dist/tokens.css": "./dist/tokens.css"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  },
+  "files": [
+    "src",
+    "dist",
+    "README.md",
+    "README.zh-CN.md",
+    "docs/usage.md",
+    "docs/usage.en.md",
+    "docs/assets",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@sveltejs/vite-plugin-svelte": "7.3.0",
+    "@types/node": "26.5.0",
+    "eslint": "10.10.0",
+    "eslint-plugin-svelte": "3.23.0",
+    "globals": "17.12.0",
+    "jsdom": "29.1.1",
+    "prettier": "3.9.6",
+    "svelte": "5.57.0",
+    "svelte-check": "4.7.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.0",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  }
+}

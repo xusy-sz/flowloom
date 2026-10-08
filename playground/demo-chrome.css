@@ -1,0 +1,185 @@
+/* 主 demo 壳层样式（playground 专用，不进库；色走库 token=宿主壳随主题接入的
+ * 演示姿势——票 22 owner 过目返工：原硬编码浅色值在深色下黑字贴黑底/淡蓝灰字
+ * 不可读）。main.js import（vite css 管道）。 */
+body {
+  margin: 0;
+  font:
+    13px/1.5 system-ui,
+    sans-serif;
+  color: var(--fl-fg, #334155);
+  background: var(--fl-panel-bg, #ffffff);
+}
+#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.fl-demo-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--fl-panel-border, #e2e8f0);
+  background: var(--fl-panel-bg, #ffffff);
+}
+.fl-demo-bar button {
+  padding: 4px 10px;
+  border: 1px solid var(--fl-panel-border, #e2e8f0);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+/* 票 25 撤销/重做栈空灰钮（禁用态随订阅刷新——走库 token 随主题联动） */
+.fl-demo-bar button:disabled {
+  color: var(--fl-fg-muted, #94a3b8);
+  cursor: default;
+  opacity: 0.55;
+}
+.fl-demo-hint {
+  color: var(--fl-fg-muted, #64748b);
+  margin-left: auto;
+}
+.fl-demo-palette {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--fl-panel-border, #e2e8f0);
+  background: var(--fl-panel-bg, #ffffff);
+}
+.fl-demo-palette-title {
+  color: var(--fl-fg-muted, #64748b);
+}
+.fl-demo-palette-item {
+  padding: 3px 10px;
+  border: 1px dashed var(--fl-fg-muted, #94a3b8);
+  border-radius: 4px;
+  cursor: grab;
+}
+.fl-demo-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.fl-demo-canvas {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+.fl-demo-minimap {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+  box-shadow: var(--fl-panel-shadow, 0 4px 12px rgb(15 23 42 / 12%));
+}
+.fl-demo-toolbox {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fl-demo-side {
+  width: 270px;
+  border-left: 1px solid var(--fl-panel-border, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.fl-demo-checklist {
+  padding: 8px;
+  border-bottom: 1px solid var(--fl-panel-border, #e2e8f0);
+}
+.fl-demo-checklist-title {
+  color: var(--fl-fg-muted, #64748b);
+}
+.fl-demo-checklist ul {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fl-demo-checklist li {
+  display: flex;
+  flex-direction: column;
+  padding: 3px 6px;
+  border: 1px solid var(--fl-panel-border, #e2e8f0);
+  border-radius: 4px;
+  color: var(--fl-fg-muted, #94a3b8);
+}
+.fl-demo-checklist li::before {
+  content: '□ ';
+}
+.fl-demo-checklist li.fl-done {
+  color: var(--fl-link-valid, #16a34a);
+  border-color: var(--fl-link-valid, #16a34a);
+}
+.fl-demo-checklist li.fl-done::before {
+  content: '✓ ';
+}
+.fl-demo-checklist li i {
+  font-style: normal;
+  font-size: 11px;
+  color: inherit;
+  opacity: 0.75;
+}
+.fl-demo-props {
+  flex: 1;
+  min-height: 0;
+  padding: 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fl-demo-props-title {
+  color: var(--fl-fg-muted, #64748b);
+}
+/* 票 24 返枢纽回链（各演示条首项——hub.html 直达对面）+嵌套页浮条：demo-chrome
+ * 的 .fl-demo-bar 是主 demo 流式条，嵌套页画布全幅无流式条位（静态块会溢出视口
+ * 外不可见）——浮条走 theme/widgets/layout 页同款绝对定位姿势（色走库 token）。 */
+.fl-demo-bar .fl-hub-link,
+.fl-float-bar .fl-hub-link {
+  padding: 4px 10px;
+  border: 1px solid var(--fl-panel-border, #e2e8f0);
+  border-radius: 4px;
+  color: var(--fl-fg, #334155);
+  text-decoration: none;
+}
+.fl-demo-bar .fl-hub-link:hover,
+.fl-float-bar .fl-hub-link:hover {
+  border-color: var(--fl-selection, #2563eb);
+  color: var(--fl-selection, #2563eb);
+}
+.fl-float-bar {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 6;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: var(--fl-panel-space-xs, 4px) var(--fl-panel-space-sm, 5px);
+  border: 1px solid var(--fl-panel-border, #e2e8f0);
+  border-radius: var(--fl-panel-radius, 6px);
+  background: var(--fl-panel-bg, #ffffff);
+  box-shadow: var(--fl-panel-shadow, 0 4px 12px rgb(15 23 42 / 12%));
+  font:
+    var(--fl-panel-font-size, 13px)/1.6 system-ui,
+    sans-serif;
+  color: var(--fl-fg, #334155);
+}
+.fl-float-bar button {
+  padding: 2px 8px;
+  border: 1px solid var(--fl-panel-border, #e2e8f0);
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+}
+.fl-float-bar button:hover {
+  border-color: var(--fl-selection, #2563eb);
+}

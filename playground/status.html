@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 节点状态呈现（票 33 载体页）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-bar .fl-current {
+        color: var(--fl-selection, #2563eb);
+        font-weight: 600;
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 52px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+
+      /* ============ 宿主 CSS（角色演示——宿主侧就这么写） ============
+       * 状态视觉映射全权在宿主：库只运输（data-fl-state-* 属性+--fl-state-* 变量）
+       * 与供结构位（.fl-node-badge/.fl-node-progress DOM+结构 CSS 已入库——overlay
+       * 零高度、fill width 吃约定变量），零值解释。以下按版本作用域分节。 */
+
+      /* —— 离散态整节点染色（三版共用——纯通道 1 双轨透传的 data 轨消费面）。
+       * #app id 前缀=提特异度：库 scoped 节点样式同特异度且注入在后，平局会输。 */
+      #app .fl-node[data-fl-state-status='done'] {
+        border-color: #16a34a;
+        background: color-mix(in srgb, #16a34a 7%, var(--fl-node-bg, #fff));
+      }
+      #app .fl-node[data-fl-state-status='running'] {
+        border-color: var(--fl-selection, #2563eb);
+        animation: fl-status-pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes fl-status-pulse {
+        50% {
+          box-shadow: 0 0 0 4px color-mix(in srgb, var(--fl-selection, #2563eb) 18%, transparent);
+        }
+      }
+      /* 未开始=不写规则（零缺省解释——库与宿主都不替宿主发明「todo 长什么样」） */
+
+      /* —— A 版：纯双轨透传（不写结构位样式——库结构位 DOM 恒在但不消费）——
+       * 徽章/进度条全是宿主自己的伪元素（无真 DOM、占宿主 ::after）。 */
+      #app.v-a .fl-node[data-fl-state-status] .fl-node-header::after {
+        content: '';
+        margin-left: auto;
+        flex: none;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--fl-fg-muted, #94a3b8);
+      }
+      #app.v-a .fl-node[data-fl-state-status='done'] .fl-node-header::after {
+        background: #16a34a;
+      }
+      #app.v-a .fl-node[data-fl-state-status='running'] .fl-node-header::after {
+        background: var(--fl-selection, #2563eb);
+      }
+      #app.v-a .fl-node::after {
+        /* 底缘进度条（vars 轨消费面——width 吃 inline 变量；无键=0 宽不可见） */
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 3px;
+        width: var(--fl-state-progress, 0);
+        background: var(--fl-selection, #2563eb);
+      }
+
+      /* —— B/C 版：库结构位的宿主视觉（结构/几何库供，此处只写色与动效——
+       * todo 空心圈=真元素才好做的例子；track 底色/fill 色与过渡全宿主）。 */
+      #app.v-b .fl-node-progress,
+      #app.v-c .fl-node-progress {
+        background: color-mix(in srgb, var(--fl-fg-muted, #94a3b8) 20%, transparent);
+      }
+      #app.v-b .fl-node-progress-fill,
+      #app.v-c .fl-node-progress-fill {
+        background: var(--fl-selection, #2563eb);
+        transition: width 120ms linear;
+      }
+      #app.v-b .fl-node[data-fl-state-status='done'] .fl-node-badge,
+      #app.v-c .fl-node[data-fl-state-status='done'] .fl-node-badge {
+        background: #16a34a;
+      }
+      #app.v-b .fl-node[data-fl-state-status='running'] .fl-node-badge,
+      #app.v-c .fl-node[data-fl-state-status='running'] .fl-node-badge {
+        background: var(--fl-selection, #2563eb);
+        animation: fl-status-blink 1.2s ease-in-out infinite;
+      }
+      @keyframes fl-status-blink {
+        50% {
+          opacity: 0.35;
+        }
+      }
+      #app.v-b .fl-node[data-fl-state-status='todo'] .fl-node-badge,
+      #app.v-c .fl-node[data-fl-state-status='todo'] .fl-node-badge {
+        background: transparent;
+        border: 1.5px solid var(--fl-fg-muted, #94a3b8);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="v-a">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-v-a" type="button">A 纯双轨透传</button>
+        <button id="fl-v-b" type="button">B 库结构位</button>
+        <button id="fl-v-c" type="button">C wayfinder 活图</button>
+        <span class="fl-current" id="fl-v-label">当前：A 纯双轨透传</span>
+        <button id="fl-undo" type="button">撤销</button>
+        <button id="fl-redo" type="button">重做</button>
+        <button id="fl-fit" type="button">适配全图</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>节点状态呈现（票 28 裁定 → 票 33 落地载体页）</h3>
+        <p>
+          <strong>A 纯双轨透传</strong>：宿主 CSS 只消费
+          <code>data-fl-state-*</code> 属性（选择器钩）+<code>--fl-state-*</code> 变量
+          （数值轨）做全部视觉，不写结构位样式——库结构位 DOM 恒在但不消费即不可见；
+          徽章/进度条全是伪元素（占宿主自己的 <code>::after</code>）。
+        </p>
+        <p>
+          <strong>B 库结构位</strong>：<code>.fl-node-badge</code>（标题条右端纯结构钩，
+          恒渲染）+<code>.fl-node-progress</code>（底缘 overlay，<code>vars.progress</code>
+          键在场才渲染、fill width 吃约定变量）结构 CSS 已入库——几何不变零高度；本页 只写色/动效宿主
+          CSS（todo 空心圈=真元素才好做的例子）。
+        </p>
+        <p>
+          <strong>C 组合+wayfinder 活图</strong>：A+B 同场实摆目标场景——三态定时翻转、
+          「进行中」进度 0→100 推进走满即完结（进度条随键退场）。<code>nodeStates</code> props
+          真接线（<code>$state</code> 代理贯入、替换袋对象即更新），状态翻转不进 kernel——左上读数里
+          <code>undo 栈</code> 恒空（活图零 undo 污染红线）。
+        </p>
+        <p>
+          <strong>接线面</strong>：NodeState 两子袋开放集 （<code>{ data, vars }</code>——离散走 data
+          轨/连续量走 vars 轨）+键形状守卫； 特异度姿势=宿主选择器加 id 前缀提权赢库 scoped 平局（票
+          28 demo 实证记档， README 使用章成文）。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./status-demo.js"></script>
+  </body>
+</html>

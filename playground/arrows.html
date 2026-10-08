@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 边箭头（票 35 载体页）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        max-width: calc(100% - 330px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 120px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-z-out" type="button">0.4×</button>
+        <button id="fl-z-fit" type="button">0.64×</button>
+        <button id="fl-z-one" type="button">1×</button>
+        <button id="fl-z-in" type="button">1.6×</button>
+        <button id="fl-fit" type="button">适配全图</button>
+        <button id="fl-theme" type="button">主题：自动</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>边箭头（票 35）</h3>
+        <p>
+          有向边「谁阻塞谁」可读性：边 <code>from→to</code> 的 to 端箭头（实心三角）。 owner
+          原型裁定（真浏览器四变体×缩放档×长短边实拍对比）：<strong
+            >实心三角 × 屏幕恒定 × 11px</strong
+          >——世界恒定在 0.4× 全景下缩至 4.4px 接近消失（与 3px
+          不缩线宽失衡）；屏幕恒定与线宽同族（线不缩箭头不缩）。
+        </p>
+        <p>
+          演示图盖五种边：长前进边（27→31）/中前进边（31→33）/<strong>后退边</strong>（31→30，
+          箭头朝左入入口）/短边（A→B，占边比压力位）/中继点长边（27→30）。缩放档逐档
+          看屏幕恒定；点选节点看箭头随<strong>选中邻接</strong>变选区色（与边同高亮）；
+          主题钮看浅深自适应（色走 <code>--fl-link</code> 词表族、类型色同链跟随）。
+        </p>
+        <p>
+          实现形=<code>link-render</code> 纯函数 <code>arrowPathD</code>（朝向=末段进锚
+          水平切线符号、退化缺省朝右、屏幕恒定=11/scale 世界长补偿）+ CanvasLinks
+          挂载（层序=边路径之上端口点之下）。真 SVG <code>&lt;marker&gt;</code> 路线裁 出：尺寸随
+          CTM 缩放做不出屏幕恒定+context-stroke 填充可靠性存疑（原型探针 实证，票 Resolution
+          记档）。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./arrows-demo.js"></script>
+  </body>
+</html>

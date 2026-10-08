@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 连接校验（票 51 载体页）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        max-width: calc(100% - 330px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar button[aria-pressed='true'] {
+        background: var(--fl-selection, #2563eb);
+        color: #fff;
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-gates {
+        top: 44px;
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 84px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+      /* 锁定节点视觉（demo 自有 CSS——锁面红档统一对照档用）：虚线琥珀边+右上角 🔒 */
+      #app[data-lockon='on'] [data-fl-node='k1'] {
+        border: 2px dashed #d97706;
+      }
+      #app[data-lockon='on'] [data-fl-node='k1']::after {
+        content: '🔒';
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        font-size: 12px;
+        line-height: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" data-lockon="off">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-mode-matrix" type="button" aria-pressed="true">校验：矩阵</button>
+        <button id="fl-mode-predicate" type="button" aria-pressed="false">校验：谓词</button>
+        <button id="fl-mode-and" type="button" aria-pressed="false">校验：AND</button>
+        <button id="fl-mode-none" type="button" aria-pressed="false">校验：无</button>
+        <button id="fl-lock" type="button" aria-pressed="false">锁 k1</button>
+        <button id="fl-reset" type="button">复位图</button>
+        <button id="fl-theme" type="button">主题：自动</button>
+      </div>
+      <div class="fl-demo-bar fl-demo-gates">
+        <button id="fl-gate-external" type="button">四门对照：外部门进违例边</button>
+        <button id="fl-gate-addedge" type="button">直连 addEdge 违例边</button>
+        <button id="fl-gate-paste" type="button">复制粘贴克隆边</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>连接校验（票 51）</h3>
+        <p>
+          宿主旁边声明「哪些连接合法」：<strong>词表兼容矩阵</strong>
+          <code>portTypeCompat</code>（typeId→可连名单，数据非代码——纯类型图零样板）+
+          <strong>谓词</strong> <code>isValidConnection</code>（跨字段动态逻辑——本页例： blend.img
+          只接 premium 源，读 from 节点 data 推导）。两形同供
+          <strong>AND 合流</strong>（与锁单并集对偶）。
+        </p>
+        <p>
+          试手（矩阵档）：拖 <code>s1</code> 右口（image）→ <code>b1</code> 上左口
+          img（image）——<strong>绿</strong>；落 msk（mask）——<strong>红档</strong>、松手
+          <strong>静默终止</strong>零快照；拖 <code>m1</code> 右口（mask）→ b1.msk——绿 （mask→mask
+          在册在名单）。
+        </p>
+        <p>
+          谓词档：拖 <code>s2</code> 右口→ <code>b1</code> img 口——预览红、落点拒（s2 非 premium；e1
+          在场=premium 源过判活例）；拖 <code>m1</code>→ b1.msk——绿（谓词 不辖 msk 口）。AND
+          档=两形同时过才放。<code>无</code> 档=opt-out 基线。
+        </p>
+        <p>
+          <strong>四门恒不刷卡</strong>（演示条钮）：外部门 applyExternal 进违例边/直连 addEdge
+          建违例边/复制粘贴克隆违例边——照常落图（真源与宿主自己的手 高于校验）；undo/redo
+          回放既成历史同不刷（合法建边后切档按 Ctrl+Z 试试）。
+        </p>
+        <p>
+          <strong>锁面红档统一</strong>：「锁 k1」钮（结构锁单票 36）——拖线落
+          <code>k1</code> 左口预览显红、松手静默终止（1.25.0 行为变化：旧版预览显绿）。
+          校验单非图数据：不进 undo/semanticHash、零通知、不被整包替换冲掉。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./connection-rules-demo.js"></script>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+/** flowloom 主题 token 集中表（票 22 立策）。
+ *
+ * 用法：宿主 `import 'flowloom/tokens.css'`（package exports ./tokens.css）——
+ * - 不挂属性=跟随系统 prefers-color-scheme（深色系统自动整套深色值）；
+ * - 挂 `<html data-fl-theme="dark">` / `"light"`=显式锁主题（挂属性+持久化归宿主壳：
+ *   localStorage 存用户选择、首帧渲染前挂属性无 FOUC——README 使用章样例）。
+ *
+ * 机制=R2 荐采纳的「集中 token 表两段覆写」（ComfyUI design-system L2 同构；不采
+ * 其 palette 运行时逐键直写——那是「用户导入自定义主题」的复杂度）。刻意分歧=
+ * 显式双值段（ComfyUI「class 缺省即深」语义易混，flowloom 无属性=跟随系统）。
+ *
+ * 降级通道：组件内 var(--fl-*, 浅色回退) 短期保留——不 import 本表的宿主保持浅色
+ * 观感（长期移除归后续票）。类型色族 --fl-port-{typeId}/--fl-link-{typeId} 是开放集
+ * （词表 PortDef.typeId 指名、宿主 CSS 供值），不在本表枚举。
+ *
+ * 维护红线：两个深色段（media 与属性选择器）必须逐声明相同——tokens.test.ts
+ * 静态钉死；浅色段是组件回退值的上收（改浅色值须连组件回退一起改，同测试覆盖）。 */
+
+:root {
+  /* 语义开关：组件侧 color-scheme 消费（画布/卫星件子树的 UA 原生控件随主题——
+   * 范围限组件子树，不在 :root 设 color-scheme 扰动宿主文档） */
+  --fl-color-scheme: light;
+
+  /* 画布与连线族 */
+  --fl-canvas-bg: #f6f7f9;
+  --fl-link: #64748b;
+  --fl-link-valid: #16a34a;
+  --fl-link-invalid: #dc2626;
+  --fl-port: #64748b;
+
+  /* 选区族（一族一色贯穿浅深——票 22 owner 裁定保蓝；深色段提亮 #60a5fa） */
+  --fl-selection: #2563eb;
+
+  /* 组框族 */
+  --fl-group-border: #c6d0dd;
+  --fl-group-bg: rgb(100 116 139 / 6%);
+
+  /* 子图保留型族 */
+  --fl-subgraph-bg: rgb(37 99 235 / 4%);
+  --fl-subgraph-fg: #475569;
+
+  /* 中继点族（active-bg 不独立设值——缺省嵌套回落 --fl-selection，一族一色） */
+  --fl-reroute: #64748b;
+  --fl-reroute-bg: #ffffff;
+
+  /* 节点族（票 22 token 化——CanvasNodes 硬编码上收；深色=slate 族与浅色同族
+   * 一体（owner 过目返工：charcoal 暖灰「土」→冷灰族）；--fl-node-cat-mix=类别色
+   * 染色带比例（浅 40%/深 30%——深色下降浊，CanvasNodes color-mix 消费） */
+  --fl-node-bg: #ffffff;
+  --fl-node-border: #cbd5e1;
+  --fl-node-fg: #334155;
+  --fl-node-header-fg: #334155;
+  --fl-node-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+  --fl-node-radius: 6px;
+  --fl-node-font-size: 13px;
+  --fl-node-cat-mix: 40%;
+
+  /* 面板族（卫星件+控件共用：NodeSearchBox/PropertiesPanel/SelectionToolbox/
+   * TitleEditor/Tooltip/WidgetControl；半径/间距/宽度=几何缺省上收非主题面——
+   * 深色段不翻，WidgetControl 的 4px/2px 局部回退在本表下统一为 6px/4px） */
+  --fl-panel-bg: #ffffff;
+  --fl-panel-border: #e2e8f0;
+  --fl-panel-shadow: 0 4px 12px rgb(15 23 42 / 12%);
+  --fl-panel-radius: 6px;
+  --fl-panel-font-size: 13px;
+  --fl-panel-font-size-muted: 11px;
+  --fl-panel-space: 8px;
+  --fl-panel-space-sm: 5px;
+  --fl-panel-space-xs: 4px;
+  --fl-panel-width: 240px;
+  --fl-panel-max-height: 320px;
+  --fl-panel-z: 10;
+
+  /* 右键菜单族（票 31 ContextMenu）：几何缺省（估宽上限+滚动高——收边钳制与
+   * max-width/max-height 同源一份，深色段不翻） */
+  --fl-ctx-width: 220px;
+  --fl-ctx-max-height: 320px;
+
+  /* 文字族 */
+  --fl-fg: #334155;
+  --fl-fg-muted: #64748b;
+
+  /* minimap 族 */
+  --fl-minimap-bg: rgb(255 255 255 / 88%);
+  --fl-minimap-node: #cbd5e1;
+  --fl-minimap-link: #64748b;
+  --fl-minimap-border: #e2e8f0;
+  --fl-minimap-radius: 6px;
+}
+
+/* 深色表（owner 过目返工：charcoal 暖灰→slate 冷灰族——与浅色同族一体，去「土」；
+ * 选中=owner 裁定保蓝提亮一族一色。染色带比例同步降浊（见 --fl-node-cat-mix）。
+ * 两入口同表：系统深色（且宿主未显式锁浅）/ 显式挂 data-fl-theme="dark"。 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fl-theme='light']) {
+    --fl-color-scheme: dark;
+    --fl-canvas-bg: #10131a;
+    --fl-link: #94a3b8;
+    --fl-link-valid: #4ade80;
+    --fl-link-invalid: #f87171;
+    --fl-port: #94a3b8;
+    --fl-selection: #60a5fa;
+    --fl-group-border: #475569;
+    --fl-group-bg: rgb(148 163 184 / 5%);
+    --fl-subgraph-bg: rgb(96 165 250 / 8%);
+    --fl-subgraph-fg: #a8b3c4;
+    --fl-reroute: #a8b3c4;
+    --fl-reroute-bg: #334155;
+    --fl-node-bg: #1e293b;
+    --fl-node-border: #3c4a5f;
+    --fl-node-fg: #e2e8f0;
+    --fl-node-header-fg: #e2e8f0;
+    --fl-node-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+    --fl-node-cat-mix: 30%;
+    --fl-panel-bg: #1a2332;
+    --fl-panel-border: #334155;
+    --fl-panel-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+    --fl-fg: #e2e8f0;
+    --fl-fg-muted: #94a3b8;
+    --fl-minimap-bg: rgb(16 19 26 / 88%);
+    --fl-minimap-node: #475569;
+    --fl-minimap-link: #8291a6;
+    --fl-minimap-border: #334155;
+  }
+}
+
+:root[data-fl-theme='dark'] {
+  --fl-color-scheme: dark;
+  --fl-canvas-bg: #10131a;
+  --fl-link: #94a3b8;
+  --fl-link-valid: #4ade80;
+  --fl-link-invalid: #f87171;
+  --fl-port: #94a3b8;
+  --fl-selection: #60a5fa;
+  --fl-group-border: #475569;
+  --fl-group-bg: rgb(148 163 184 / 5%);
+  --fl-subgraph-bg: rgb(96 165 250 / 8%);
+  --fl-subgraph-fg: #a8b3c4;
+  --fl-reroute: #a8b3c4;
+  --fl-reroute-bg: #334155;
+  --fl-node-bg: #1e293b;
+  --fl-node-border: #3c4a5f;
+  --fl-node-fg: #e2e8f0;
+  --fl-node-header-fg: #e2e8f0;
+  --fl-node-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+  --fl-node-cat-mix: 30%;
+  --fl-panel-bg: #1a2332;
+  --fl-panel-border: #334155;
+  --fl-panel-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+  --fl-fg: #e2e8f0;
+  --fl-fg-muted: #94a3b8;
+  --fl-minimap-bg: rgb(16 19 26 / 88%);
+  --fl-minimap-node: #475569;
+  --fl-minimap-link: #8291a6;
+  --fl-minimap-border: #334155;
+}

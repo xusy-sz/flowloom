@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 跨线桥 JumpOver（票 53 载体页）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        max-width: calc(100% - 330px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar button[aria-pressed='true'] {
+        background: var(--fl-selection, #2563eb);
+        color: #fff;
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 84px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-jump" type="button" aria-pressed="true">跨线桥：开</button>
+        <button id="fl-shape" type="button">形状：straight</button>
+        <button id="fl-reset" type="button">复位图</button>
+        <button id="fl-theme" type="button">主题：自动</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>跨线桥 JumpOver（票 53）</h3>
+        <p>
+          边-边交叉处往<strong>跳边</strong> d 串插半圆弧「跳过」（工程制图惯例，GoJS
+          内置同款）——解决边-边交叉的清晰化件；与绕障（边-节点穿越改道）正交，绕障
+          不在本票。全局开关=CanvasView props <code>edgeJump</code>（缺省 false
+          零行为变化），纯渲染层配置——不进词表不进 kernel 不进图数据。
+        </p>
+        <p>
+          <strong>哪边跳=边 id 字典序大者</strong>（稳定裁定，与位移/输入序无关）： 顶部 X 交叉
+          <code>e1/e2</code> 恒 <code>e2</code> 跳；下部网格 <code>g1/g2/g3</code> 三对交叉——<code
+            >g2</code
+          >
+          跳一对、<code>g3</code>
+          跳两对。拖动节点：弧随交叉出现/消失，跳边不换侧不闪。
+        </p>
+        <p>
+          四型同享（交叉检测一次覆盖四型）：演示条「形状」钮循环
+          bezier/straight/step/smoothstep——直线/折线族精确线段测试、曲线族拉平折线
+          近似；弧半径<strong>屏幕恒定 7px</strong>（随镜头 1/scale 补偿，缩放试手）。
+          同端口扇出边<strong>近锚交叉不画弧</strong>（共享锚点邻域排除）。
+        </p>
+        <p>
+          边界记档：命中测试沿基础路径（弧偏差半径量级内忽略）；弧段与线段同一条
+          path——stroke/选中邻接高亮 CSS 天然继承（选中任一节点试看高亮边上的弧）。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./edge-jump-demo.js"></script>
+  </body>
+</html>

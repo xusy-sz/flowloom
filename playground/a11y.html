@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 无障碍声明面（票 50 载体页）</title>
+    <style>
+      .fl-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        border: 0;
+        clip-path: inset(50%);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        max-width: calc(100% - 330px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        color: inherit; /* 票 50：UA 缺省黑字在深色 token 底上 1.7:1 过不了 axe */
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 120px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side > p {
+        margin: 6px 0;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #334155); /* 票 50：muted 对混底 4.1:1 过不了 axe——字色走正文档 */
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+      .fl-demo-side kbd {
+        font:
+          11px/1.4 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #334155); /* 票 50：同 code——对混底对比过 axe */
+        padding: 0 5px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-bottom-width: 2px;
+        border-radius: 4px;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 8%, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 票 50：main 地标+唯一 h1（sr-only）——本页过 axe 全量（landmark/heading/region 三规则） -->
+    <main id="app">
+      <h1 class="fl-sr-only">flowloom 无障碍声明面演示</h1>
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-reset" type="button">复位图</button>
+        <button id="fl-theme" type="button">主题：自动</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side">
+        <p>键盘操作路径活例（先<strong>点一下画布聚焦</strong>，键位只在画布聚焦域消费）：</p>
+        <p>
+          <kbd>Tab</kbd>/<kbd>Shift+Tab</kbd> 图序遍历改选区（读数面「选中」与
+          <code>aria-activedescendant</code> 跟随）；<kbd>方向键</kbd> nudge 1px、
+          <kbd>Shift</kbd>+方向 10px（坐标读数动、每按一张快照——撤销逐按回退）；
+          <kbd>Enter</kbd>=双击等效（原位改名，提交恰一张快照）；<kbd>+</kbd>/<kbd>=</kbd>/<kbd
+            >-</kbd
+          >
+          绕视口中心缩放、<kbd>空格</kbd>+方向平移（视口读数动，不入 undo）。
+        </p>
+        <p>
+          <strong>输入域 Tab 不被吞对照</strong>：节点上的备注输入框（text widget）内按
+          <kbd>Tab</kbd>——照常走宿主 tab 序（隔离守卫：控件域键不进画布命令接线）， 画布选区不动。
+        </p>
+        <p>
+          <strong>labels 覆写例</strong>：本页 CanvasView 传
+          <code>labels={{ canvas: 'Node canvas', ... }}</code> 英文词表——画布根 aria-label
+          与折叠钮两态文案被覆写（读屏可验），缺省中文见其它各页。
+        </p>
+        <p>
+          aria 面：画布根 <code>role="application"</code>；节点
+          <code>role="group"</code>+aria-label=显示名单源；activedescendant
+          图序末位锚点跟随（多选只指一个=已知简化）。
+        </p>
+      </div>
+    </main>
+    <script type="module" src="./a11y-demo.js"></script>
+  </body>
+</html>

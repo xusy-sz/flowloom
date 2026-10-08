@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom PNG·SVG 导出（票 56 载体页）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/预览侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        flex-wrap: wrap;
+        max-width: calc(100% - 340px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 52px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+      .fl-export-preview {
+        width: 100%;
+        border: 1px dashed var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        margin-top: 4px;
+        display: block;
+      }
+      /* 透明 PNG 预览的棋盘底（无 alpha 通道视觉=「透明」不可见的惯例解法） */
+      .fl-export-preview.fl-transparent {
+        background:
+          conic-gradient(#0000 90deg, #0002 0 180deg, #0000 0 270deg, #0002 0) 0 0 / 16px 16px,
+          white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <span id="fl-theme"></span>
+        <button id="fl-png-light" type="button">PNG·浅</button>
+        <button id="fl-png-dark" type="button">PNG·深</button>
+        <button id="fl-png-clear" type="button">PNG·透明</button>
+        <button id="fl-png-r2" type="button">PNG·×2</button>
+        <button id="fl-dl-png" type="button">下载 PNG</button>
+        <button id="fl-dl-svg" type="button">下载 SVG</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>PNG·SVG 导出（票 48 七裁 → 票 56 落地载体页）</h3>
+        <p>
+          <strong>数据出口门面</strong>：<code>controller.exportSVG() → string</code> （headless
+          全可用——纯字符串拼装）与
+          <code>controller.exportPNG() → Promise&lt;Blob&gt;</code>（SVG→Blob URL→Image→canvas
+          原生光栅化四步零依赖）。 <strong>交付=返回产物不触发下载</strong>——下载是宿主
+          UX（本页「下载」钮就是 宿主接线演示：a[download] 一行）。
+        </p>
+        <p>
+          <strong>主题缺省=exportEnv 旁挂槽</strong>（viewSize 同形第三例）：CanvasView 挂载读
+          <code>data-fl-theme</code>/prefers-color-scheme 镜像 tokens.css
+          级联发布；显式参数恒覆盖（「PNG·浅/深」钮即显式档）；浅深双出=调两次。
+          <code>background: 'transparent'</code>=透明底（棋盘底预览示 alpha）；
+          <code>pixelRatio: 2</code>=文档嵌入倍率。
+        </p>
+        <p>
+          <strong>所见即所导</strong>：状态四态（c 节点 todo=雾化透明度、a 节点
+          running=选区色边框+进度条、b 节点 done=绿档）经 <code>nodeStates</code>
+          props 同路发布进导出槽；锁角标（🔒）/折叠形/类别色跟随；选中/框选等交互态不带。
+        </p>
+        <p id="fl-export-note">
+          点上方任一 PNG 钮：预览落此、读数面给尺寸/blob 大小/角像素 alpha/节点面像素采样。
+        </p>
+        <details style="margin-top: 8px">
+          <summary style="cursor: pointer">SVG 源文本（前 1600 字符）</summary>
+          <pre
+            id="fl-svg-src"
+            style="
+              font-size: 10px;
+              line-height: 1.5;
+              white-space: pre-wrap;
+              word-break: break-all;
+              margin: 4px 0;
+            "
+          ></pre>
+        </details>
+        <img id="fl-export-preview" class="fl-export-preview" alt="导出 PNG 预览" hidden />
+      </div>
+    </div>
+    <script type="module" src="./export-demo.js"></script>
+  </body>
+</html>

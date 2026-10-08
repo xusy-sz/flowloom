@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 右键菜单（票 31）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 52px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-fit" type="button">适配全图</button>
+        <button id="fl-undo" type="button">撤销</button>
+        <button id="fl-redo" type="button">重做</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>右键菜单演示（票 31 载体页）</h3>
+        <p>
+          <strong>右键任意处</strong>出菜单——items 全宿主注入（本页脚本即宿主样例，
+          <code>CanvasView</code> 的 <code>contextMenuItems</code> props）：
+          <code>getItems(context)</code> 回调携命中上下文（kind/nodeId/edgeId…）现算， 库零预置项。
+        </p>
+        <p>
+          <strong>命中五路</strong>：节点体/端口/边路径/中继点/组框/空白——各路菜单 内容由宿主按
+          <code>context.kind</code> 分派（读数面左上同步显示最近命中）。
+        </p>
+        <p>
+          <strong>右键改选=Windows 规则</strong>：点中选区内保选/点中选区外 replace
+          改选/空白·边·中继点不动选区；改选召出的选区工具条与菜单同位
+          叠置——菜单期隐、菜单关照常显（本页挂 SelectionToolbox 即样例）。选区= 交互态：<code
+            >undo 栈</code
+          >
+          读数恒不被右键扰动。
+        </p>
+        <p>
+          <strong>让位与关闭</strong>：拖动/框选/连线/拖中继点在途或空格平移态右键
+          不弹（系统菜单同压）；菜单开着时 <code>Esc</code>=只关菜单不清选区；外点
+          关闭；右键点菜单自身=关闭。节点内 widget 控件上右键=浏览器原生菜单
+          （隔离让位——控件归属件自己）。
+        </p>
+        <p>
+          <strong>未注入即退出</strong>：宿主不传 <code>contextMenuItems</code> 时
+          右键行为与本票之前完全一致（原生菜单）——契约 v2 纯增量。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./contextmenu-demo.js"></script>
+  </body>
+</html>

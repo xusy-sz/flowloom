@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom dist 预构建入口（票 54 载体页）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        max-width: calc(100% - 330px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 84px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-reset" type="button">复位图</button>
+        <button id="fl-theme" type="button">主题：自动</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>dist 预构建入口（票 54）</h3>
+        <p>
+          本页整页<strong>改吃 dist 产物</strong>：import 全走 <code>flowloom/dist</code>
+          键族（root 转出口键引 kernel 面符号+<code>./dist/svelte</code>+
+          <code>./dist/tokens.css</code>——vite 别名直指入仓产物，消费者 import 形态演练
+          同款口径；root 键经 index.js 转出口自然拉起 kernel.js，四件全上资源表）。产物 =<strong
+            >三入口 bundle ESM 各一文件+tokens.css 原样</strong
+          >， <code>svelte</code> 恒 external（peerDep 宿主自供——单一运行时），组件 css 已
+          'injected' 内嵌（零 CSS 文件面）。
+        </p>
+        <p>
+          <strong>免编译腿</strong>：dist 里没有 <code>.svelte</code>/<code>.svelte.ts</code>/
+          TS——宿主构建管线零 Svelte 编译知识（源码 vendor 路径必踩的 compileModule 崩点
+          天然不存在；「双 Svelte 运行时」类宿主坑同理免疫）。读数面首行=本页实际加载的 dist
+          模块（浏览器资源表取证）。
+        </p>
+        <p>
+          消费姿势：<strong>优先 dist、源码路径为兜底</strong>（README「dist 入口与源码消费」节）——
+          拷 dist 四件+svelte 说明符 external 即用；TS 宿主走源码键吃类型 （v1 不带
+          .d.ts）。重建=<code>npm run dist:build</code>（票收口随版本 bump）。
+        </p>
+        <p>
+          交互面与源码页零差：拖节点（松手恰一张快照可撤销）/框选/端口拖线/滚轮缩放—— 复位图钮重建
+          controller 全链再来一遍。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./dist-demo.js"></script>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 节点双击改道（票 32）</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar button.fl-mode-on {
+        background: var(--fl-selection, #2563eb);
+        color: #fff;
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 52px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+      /* 宿主对话窗样例（宿主侧浮层——非库面） */
+      .fl-demo-dialog {
+        position: absolute;
+        z-index: 7;
+        width: 240px;
+        padding: 10px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 8px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 6px 20px rgb(15 23 42 / 14%);
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-dialog h4 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-dialog p {
+        margin: 4px 0;
+      }
+      .fl-demo-dialog code {
+        font-family: ui-monospace, monospace;
+      }
+      .fl-demo-dialog-hint {
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-dialog button {
+        margin-top: 6px;
+        padding: 2px 10px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-mode-take" type="button">接管</button>
+        <button id="fl-mode-decline" type="button">拒接</button>
+        <button id="fl-mode-off" type="button">缺省</button>
+        <button id="fl-fit" type="button">适配全图</button>
+        <button id="fl-undo" type="button">撤销</button>
+        <button id="fl-redo" type="button">重做</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>节点双击改道演示（票 32 载体页）</h3>
+        <p>
+          <strong>双击节点</strong>可改道宿主回调 <code>controller.onNodeDoubleClick</code>
+          （onLinkEmptyDrop 同款可置钩子）——参数=命中节点+画布本地屏幕坐标（锚浮层用）。
+          演示条切换三态对照：
+        </p>
+        <p>
+          <strong>接管</strong>（缺省态）：钩子在位即宿主吃双击——左上弹出宿主对话窗样例 （锚=钩子
+          screen 参数），内建原位改名<strong>不发生</strong>。
+        </p>
+        <p>
+          <strong>拒接</strong>：钩子返回 <code>false</code>=显式拒接——回落内建原位改名 （票 15
+          行为，宿主可按节点裁量）。
+        </p>
+        <p><strong>缺省</strong>：未置钩子——改名照旧（既有演示页行为不迁）。</p>
+        <p>
+          <strong>改道只及节点体</strong>：双击空白照弹节点搜索面板、双击子图占位照进子图、
+          平移态（空格按住）双击照让——双击面统一收口（票 15）的分支语义零迁移。
+          双击本身零快照：<code>undo 栈</code> 读数恒不被双击扰动。
+        </p>
+      </div>
+    </div>
+    <script type="module" src="./dblclick-demo.js"></script>
+  </body>
+</html>

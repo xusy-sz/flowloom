@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flowloom 集成 demo II · 审批流场面</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        height: 100%;
+      }
+      #app {
+        position: relative;
+      }
+      #fl-canvas-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 320px;
+        bottom: 0;
+      }
+      /* 演示条/读数面/说明侧栏（票 24 token 化惯例——色走库 token 随主题翻） */
+      .fl-demo-bar {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+        font:
+          13px/1.6 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+        max-width: calc(100% - 330px);
+      }
+      .fl-demo-bar button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        font: inherit;
+        cursor: pointer;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 14%, transparent);
+      }
+      .fl-demo-bar button:hover {
+        background: color-mix(in srgb, var(--fl-selection, #2563eb) 12%, transparent);
+      }
+      .fl-demo-bar button[aria-pressed='true'] {
+        background: var(--fl-selection, #2563eb);
+        color: #fff;
+      }
+      .fl-demo-bar a {
+        padding: 2px 8px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        color: var(--fl-fg, #334155);
+        text-decoration: none;
+      }
+      .fl-demo-bar a:hover {
+        border-color: var(--fl-selection, #2563eb);
+        color: var(--fl-selection, #2563eb);
+      }
+      .fl-demo-stats {
+        position: absolute;
+        top: 92px;
+        left: 8px;
+        z-index: 6;
+        padding: 4px 10px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        color: var(--fl-fg, #475569);
+        white-space: pre;
+      }
+      .fl-demo-side {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        z-index: 6;
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid var(--fl-panel-border, #e2e8f0);
+        border-radius: 6px;
+        background: var(--fl-panel-bg, #fff);
+        overflow-y: auto;
+        font:
+          12px/1.7 system-ui,
+          sans-serif;
+        color: var(--fl-fg, #334155);
+      }
+      .fl-demo-side h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        color: var(--fl-fg-muted, #64748b);
+      }
+      .fl-demo-side p {
+        margin: 6px 0;
+      }
+      .fl-demo-side code {
+        font:
+          11px/1.5 ui-monospace,
+          monospace;
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 12%, transparent);
+        padding: 0 4px;
+        border-radius: 3px;
+      }
+      #fl-mini {
+        position: absolute;
+        left: 12px;
+        bottom: 12px;
+        z-index: 6;
+      }
+      .fl-export-preview {
+        width: 100%;
+        border: 1px dashed var(--fl-panel-border, #e2e8f0);
+        border-radius: 4px;
+        margin-top: 4px;
+        display: block;
+      }
+
+      /* ============ 宿主 CSS（角色演示——视觉全权在宿主） ============
+       * 端口类型色开放集（票 22）：矩阵四类各归其色，拖线时红档与否一眼可对。
+       * #app id 前缀=提特异度赢库 scoped 平局（票 28 demo 实证）。 */
+      #app {
+        --fl-port-form: #0891b2;
+        --fl-port-pass: #16a34a;
+        --fl-port-reject: #dc2626;
+        --fl-port-done: #64748b;
+      }
+      /* 状态视觉（票 33 姿势）：与导出器 chrome 同款口径（running=选区色/done=绿/
+       * todo=雾化 0.55——所见即所导的宿主半边），离散态吃 data-fl-state-status。 */
+      #app .fl-node[data-fl-state-status='running'] {
+        border-color: var(--fl-selection, #2563eb);
+      }
+      #app .fl-node[data-fl-state-status='running'] .fl-node-badge {
+        background: var(--fl-selection, #2563eb);
+      }
+      #app .fl-node[data-fl-state-status='done'] {
+        border-color: #16a34a;
+      }
+      #app .fl-node[data-fl-state-status='done'] .fl-node-badge {
+        background: #16a34a;
+      }
+      #app .fl-node[data-fl-state-status='todo'] {
+        opacity: 0.55;
+      }
+      #app .fl-node[data-fl-state-status='todo'] .fl-node-badge {
+        background: transparent;
+        border: 1.5px solid var(--fl-fg-muted, #94a3b8);
+      }
+      #app .fl-node-progress {
+        background: color-mix(in srgb, var(--fl-fg-muted, #64748b) 20%, transparent);
+      }
+      #app .fl-node-progress-fill {
+        background: var(--fl-selection, #2563eb);
+      }
+      /* 锁定视觉（票 36 姿势——库面零预置）：归档节点琥珀虚线+右上 🔒 角标。
+       * 放状态规则后+并 .fl-node 提特异度——琥珀压过 done 绿（徽章仍绿=完结可读）。 */
+      #app .fl-node[data-fl-node='ar'] {
+        border-style: dashed;
+        border-color: #d97706;
+      }
+      #app .fl-node[data-fl-node='ar']::after {
+        content: '🔒';
+        position: absolute;
+        top: 4px;
+        right: 22px;
+        font-size: 10px;
+        line-height: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- 画布区=停靠式（右侧让出 320px 侧栏——悬浮侧栏会盖住 fitView 收进的右列，
+        票 52 构图被侧栏盖同类坑；CanvasView 自量容器，fitView 即以可见区适配） -->
+      <div id="fl-canvas-area"></div>
+      <div class="fl-demo-bar">
+        <a class="fl-hub-link" href="./hub.html">⌂ 枢纽</a>
+        <button id="fl-shape" type="button">形状：bezier</button>
+        <button id="fl-jump" type="button" aria-pressed="false">跨线桥</button>
+        <button id="fl-rules" type="button" aria-pressed="true">校验：AND</button>
+        <button id="fl-png" type="button">导出 PNG</button>
+        <button id="fl-svg" type="button">导出 SVG</button>
+        <button id="fl-fit" type="button">适配</button>
+        <button id="fl-reset" type="button">复位</button>
+        <button id="fl-theme" type="button">主题：自动</button>
+      </div>
+      <div class="fl-demo-stats" id="fl-demo-stats"></div>
+      <div id="fl-mini"></div>
+      <div class="fl-demo-side" id="fl-demo-side">
+        <h3>集成 demo II · 审批流场面</h3>
+        <p>
+          本册六面同场一张画布：<strong>连接校验</strong>（矩阵∧谓词 AND——拖
+          <code>初审 B</code> 的通过口到 <code>终审</code> 试试红档：level 2&lt;3 被否决；
+          表单口直连呈批口也被矩阵拦）/<strong>边形状四型+跨线桥</strong>（全局缺省循环 钮——词表
+          per-type 覆盖恒稳：初审=step/终审=smoothstep/修订=bezier；开跨线桥 后 e5×e6
+          交叉处出半圆弧）/<strong>PNG·SVG 导出</strong>（所见即所导——状态染色/
+          进度条/锁角标跟随；下载钮=宿主一行接线）/<strong>a11y 键盘面</strong>（点画布聚焦后 Tab
+          遍历/方向键 nudge/Enter 改名/± 缩放/空格+方向平移——读数面逐步有数）/
+          <strong>侧栏跟随</strong>（$selection 直用零 tick 咒语，回写可撤销）/<strong
+            >dist 分发面</strong
+          >（本页 import 全走 <code>flowloom/dist</code> 键族——读数面 首行是资源表取证）。
+        </p>
+        <p>
+          <strong>试手</strong>：拖 <code>修订</code> 的重报口到 <code>初审 A</code> 表单口
+          ——合法新边（撤销可回）；拖任何口到 <code>归档</code> 🔒——锁面红档统一；点选
+          <code>归档</code> 按 Delete——被拦（结构锁）；拖动 <code>修订</code> 节点——跨线桥
+          弧随交叉出现/消失且跳边不换侧；循环全局形状至 straight——e1/e4 直线与 e2/e5 step、e3
+          smoothstep、e6 bezier 四型同图对照。
+        </p>
+        <div id="fl-side-mount"></div>
+        <img id="fl-export-preview" class="fl-export-preview" alt="导出 PNG 预览" hidden />
+      </div>
+    </div>
+    <script type="module" src="./integration2-demo.js"></script>
+  </body>
+</html>
